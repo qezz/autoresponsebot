@@ -32,8 +32,10 @@ const ESSENCE_OUT: &str = "
 
 fn main() {
     dotenv().ok();
-
+    let evengining_user = UserId::new(560120889);  // @evengining
     let test_user = UserId::new(560120889);  // test test
+    let essence_disabled = vec![evengining_user, test_user];
+
     let mut core = Core::new().unwrap();
     let token = env::var("AUTORESPONSEBOT_TOKEN").unwrap();
     let api = Api::configure(token).build(core.handle()).unwrap();
@@ -45,7 +47,13 @@ fn main() {
                 if let MessageKind::Text { ref data, .. } = message.kind {
                     let data = data.to_lowercase();
                     if data.contains(ESSENCE_IN) {
-                        api.spawn(message.text_reply(ESSENCE_OUT));
+                        api.spawn(message.text_reply(
+                            if essence_disabled.contains(&message.from.id) {
+                                POSHEL_NAHUY
+                            } else {
+                                ESSENCE_OUT
+                            }
+                        ));
                     }
                 }
             }
