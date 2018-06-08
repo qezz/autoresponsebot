@@ -1,13 +1,15 @@
+#![feature(proc_macro, generators)]
+
 extern crate dotenv;
-extern crate futures;
+extern crate futures_await as futures;
 extern crate telegram_bot;
 extern crate tokio_core;
 
 use dotenv::dotenv;
-use futures::Stream;
+use futures::prelude::*;
 use std::env;
-use telegram_bot::{Api, MessageKind, UpdateKind, UserId};
 use telegram_bot::prelude::*;
+use telegram_bot::{Api, MessageKind, UpdateKind, UserId};
 use tokio_core::reactor::Core;
 
 const POSHEL_NAHUY: &str = "POSHEL NAHUY";
@@ -32,33 +34,36 @@ const ESSENCE_OUT: &str = "
 
 fn main() {
     dotenv().ok();
-    let evengining_user = UserId::new(301800131);  // @evengining
-    let test_user = UserId::new(560120889);  // test test
-    let essence_disabled = vec![evengining_user, test_user];
-
     let mut core = Core::new().unwrap();
     let token = env::var("AUTORESPONSEBOT_TOKEN").unwrap();
     let api = Api::configure(token).build(core.handle()).unwrap();
-    let future = api.stream().for_each(|update| {
+    core.run(handle_updates(api)).unwrap();
+}
+
+#[async]
+fn handle_updates(api: Api) -> Result<(), telegram_bot::Error> {
+    let evengining_user = UserId::new(301800131); // @evengining
+    let test_user = UserId::new(560120889); // test test
+    let essence_disabled = vec![evengining_user, test_user];
+
+    #[async]
+    for update in api.stream() {
         if let UpdateKind::Message(message) = update.kind {
-            if message.from.id == test_user {
-                api.spawn(message.text_reply(POSHEL_NAHUY));
-            } else {
-                if let MessageKind::Text { ref data, .. } = message.kind {
-                    let data = data.to_lowercase();
-                    if data.contains(ESSENCE_IN) {
-                        api.spawn(message.text_reply(
-                            if essence_disabled.contains(&message.from.id) {
-                                POSHEL_NAHUY
-                            } else {
-                                ESSENCE_OUT
-                            }
-                        ));
+            let msg = message.clone();
+            if let MessageKind::Text { data, .. } = message.kind {
+                if data.to_lowercase().contains(ESSENCE_IN) {
+                    if let Err(err) = await!(api.send(msg.text_reply(
+                        if essence_disabled.contains(&message.from.id) {
+                            POSHEL_NAHUY
+                        } else {
+                            ESSENCE_OUT
+                        }
+                    ))) {
+                        println!("Failed to send message: {}", err);
                     }
                 }
             }
         }
-        Ok(())
-    });
-    core.run(future).unwrap();
+    }
+    Ok(())
 }
