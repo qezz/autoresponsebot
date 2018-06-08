@@ -11,7 +11,7 @@ use telegram_bot::prelude::*;
 use tokio_core::reactor::Core;
 
 const POSHEL_NAHUY: &str = "POSHEL NAHUY";
-const ESSENCE_IN: &str = "ты не понимаешь сути";
+const ESSENCE_IN: &str = "не понимаешь сути";
 const ESSENCE_OUT: &str = "
 Ты СОВЕРШЕННО не понимаешь в чем суть расточата.
 расточат это не стековерфлоу «у меня не запускается хелловорлд, напишите мне 2 листа причин».
