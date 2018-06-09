@@ -1,12 +1,13 @@
 #![feature(proc_macro, generators)]
-
 extern crate dotenv;
 extern crate futures_await as futures;
+extern crate regex;
 extern crate telegram_bot;
 extern crate tokio_core;
 
 use dotenv::dotenv;
 use futures::prelude::*;
+use regex::Regex;
 use std::env;
 use telegram_bot::prelude::*;
 use telegram_bot::{Api, MessageKind, UpdateKind, UserId};
@@ -44,21 +45,25 @@ fn main() {
 fn handle_updates(api: Api) -> Result<(), telegram_bot::Error> {
     let evengining_user = UserId::new(301800131); // @evengining
     let test_user = UserId::new(560120889); // test test
-    let essence_disabled = vec![evengining_user, test_user];
+    let users_to_fuck = vec![evengining_user, test_user];
+    let essense_re = Regex::new("сут[ьи]|понима").unwrap();
 
     #[async]
     for update in api.stream() {
         if let UpdateKind::Message(message) = update.kind {
             let msg = message.clone();
             if let MessageKind::Text { data, .. } = message.kind {
-                if data.to_lowercase().contains(ESSENCE_IN) {
-                    if let Err(err) = await!(api.send(msg.text_reply(
-                        if essence_disabled.contains(&message.from.id) {
-                            POSHEL_NAHUY
-                        } else {
-                            ESSENCE_OUT
-                        }
-                    ))) {
+                let data = data.to_lowercase();
+                let reply =
+                    if users_to_fuck.contains(&message.from.id) && essense_re.is_match(&data) {
+                        Some(msg.text_reply(POSHEL_NAHUY))
+                    } else if data.contains(ESSENCE_IN) {
+                        Some(msg.text_reply(ESSENCE_OUT))
+                    } else {
+                        None
+                    };
+                if let Some(reply) = reply {
+                    if let Err(err) = await!(api.send(reply)) {
                         println!("Failed to send message: {}", err);
                     }
                 }
