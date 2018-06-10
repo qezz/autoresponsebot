@@ -46,7 +46,9 @@ fn handle_updates(api: Api) -> Result<(), telegram_bot::Error> {
     let evengining_user = UserId::new(301800131); // @evengining
     let test_user = UserId::new(560120889); // test test
     let users_to_fuck = vec![evengining_user, test_user];
-    let essense_re = Regex::new("сут[ьи]|понима").unwrap();
+    let bad_words_re = Regex::new(
+        "сут[ьи]|понима|ponima|sut|understand|essence|соси|сосал",
+    ).unwrap();
 
     #[async]
     for update in api.stream() {
@@ -55,7 +57,7 @@ fn handle_updates(api: Api) -> Result<(), telegram_bot::Error> {
             if let MessageKind::Text { data, .. } = message.kind {
                 let data = data.to_lowercase();
                 let reply =
-                    if users_to_fuck.contains(&message.from.id) && essense_re.is_match(&data) {
+                    if users_to_fuck.contains(&message.from.id) && bad_words_re.is_match(&data) {
                         Some(msg.text_reply(POSHEL_NAHUY))
                     } else if data.contains(ESSENCE_IN) {
                         Some(msg.text_reply(ESSENCE_OUT))
