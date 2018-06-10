@@ -48,7 +48,7 @@ fn handle_updates(api: Api) -> Result<(), telegram_bot::Error> {
     let test_user = UserId::new(560120889); // test test
     let users_to_fuck = vec![evengining_user, test_user];
     let bad_words_re = Regex::new(
-        "сут[ьи]|понима|ponima|sut|understand|essence|соси|сосал",
+        "сут[ьиі]|понима|розум|ponima|sut|understand|essence|соси|сосал",
     ).unwrap();
 
     #[async]
