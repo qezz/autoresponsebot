@@ -13,6 +13,7 @@ use telegram_bot::prelude::*;
 use telegram_bot::{Api, Message, MessageEntityKind, MessageKind, SendMessage, UpdateKind, UserId};
 use tokio_core::reactor::Core;
 
+const BAD_WORDS_RE: &str = "[сsc][уuy][тt][ьиі1]?|[pпp][оo][нn][иiy1][мm][аa]|[pрr][оo][zsз][yuу][mм]|[uуаy][nн][дd][eе][рr]?[scс][tт][aэе][nн][dдт]?|[eэе][scс][scс]?[eэе][nн][csс][eэе]?|[сsc][оо][сsc][иi1]|[сsc][oо][сsc][аa]";
 const ZERO_DIVISION_ERROR: &str = "thread 'main' panicked at 'attempt to divide by zero'";
 const POSHEL_NAHUY: &str = "POSHEL NAHUY";
 const ESSENCE_IN: &str = "не понимаешь сути";
@@ -47,9 +48,7 @@ fn handle_updates(api: Api) -> Result<(), telegram_bot::Error> {
     let evengining_user = UserId::new(301800131); // @evengining
     let test_user = UserId::new(560120889); // test test
     let users_to_fuck = vec![evengining_user, test_user];
-    let bad_words_re = Regex::new(
-        "сут[ьиі]|понима|розум|ponima|sut|understand|essence|соси|сосал",
-    ).unwrap();
+    let bad_words_re = Regex::new(BAD_WORDS_RE).unwrap();
 
     #[async]
     for update in api.stream() {
