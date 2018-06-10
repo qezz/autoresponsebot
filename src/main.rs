@@ -13,7 +13,7 @@ use telegram_bot::prelude::*;
 use telegram_bot::{Api, Message, MessageEntityKind, MessageKind, SendMessage, UpdateKind, UserId};
 use tokio_core::reactor::Core;
 
-const BAD_WORDS_RE: &str = "[сsc][уuy][тt][ьиі1]?|[pпp][оo][нn][иiy1][мm][аa]|[pрr][оo][zsз][yuу][mм]|[uуаy][nн][дd][eе][рr]?[scс][tт][aэе][nн][dдт]?|[eэе][scс][scс]?[eэе][nн][csс][eэе]?|[сsc][оо][сsc][иi1]|[сsc][oо][сsc][аa]";
+const BAD_WORDS_RE: &str = "[сsc][уuy][тt][ьиі1]?|[pпp][оаao][нn][иiыy1][мm][аa]|[pрr][оo][zsз][yuу][mм]|[uуаy][nн][дd][eе][рr]?[scс][tт][aэе][nн][dдт]?|[eэе][scс][scс]?[eэе][nн][csс][eэе]?|[сsc][оо][сsc][иi1]|[сsc][oо][сsc][аa]";
 const ZERO_DIVISION_ERROR: &str = "thread 'main' panicked at 'attempt to divide by zero'";
 const POSHEL_NAHUY: &str = "POSHEL NAHUY";
 const ESSENCE_IN: &str = "не понимаешь сути";
