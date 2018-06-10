@@ -10,7 +10,7 @@ use futures::prelude::*;
 use regex::Regex;
 use std::env;
 use telegram_bot::prelude::*;
-use telegram_bot::{Api, Message, MessageKind, SendMessage, UpdateKind, UserId};
+use telegram_bot::{Api, Message, MessageEntityKind, MessageKind, SendMessage, UpdateKind, UserId};
 use tokio_core::reactor::Core;
 
 const ZERO_DIVISION_ERROR: &str = "thread 'main' panicked at 'attempt to divide by zero'";
@@ -55,14 +55,29 @@ fn handle_updates(api: Api) -> Result<(), telegram_bot::Error> {
     for update in api.stream() {
         if let UpdateKind::Message(message) = update.kind {
             let msg = message.clone();
-            if let MessageKind::Text { data, .. } = message.kind {
+            if let MessageKind::Text { data, entities } = message.kind {
                 let data = data.to_lowercase();
                 let reply =
                     if users_to_fuck.contains(&message.from.id) && bad_words_re.is_match(&data) {
                         Some(msg.text_reply(POSHEL_NAHUY))
                     } else if data.contains(ESSENCE_IN) {
                         Some(reply_to_message(msg, ESSENCE_OUT))
-                    } else if data.contains("/0") {
+                    } else if entities
+                        .iter()
+                        .find(|e| {
+                            if e.kind == MessageEntityKind::BotCommand && e.length == 2 {
+                                data.chars()
+                                    .skip(e.offset as usize + 1)
+                                    .take(e.length as usize)
+                                    .next()
+                                    .map(|ch| ch == '0')
+                                    .unwrap_or(false)
+                            } else {
+                                false
+                            }
+                        })
+                        .is_some()
+                    {
                         Some(reply_to_message(msg, ZERO_DIVISION_ERROR))
                     } else {
                         None
