@@ -10,9 +10,10 @@ use futures::prelude::*;
 use regex::Regex;
 use std::env;
 use telegram_bot::prelude::*;
-use telegram_bot::{Api, MessageKind, UpdateKind, UserId};
+use telegram_bot::{Api, Message, MessageKind, SendMessage, UpdateKind, UserId};
 use tokio_core::reactor::Core;
 
+const ZERO_DIVISION_ERROR: &str = "thread 'main' panicked at 'attempt to divide by zero'";
 const POSHEL_NAHUY: &str = "POSHEL NAHUY";
 const ESSENCE_IN: &str = "не понимаешь сути";
 const ESSENCE_OUT: &str = "
@@ -60,7 +61,9 @@ fn handle_updates(api: Api) -> Result<(), telegram_bot::Error> {
                     if users_to_fuck.contains(&message.from.id) && bad_words_re.is_match(&data) {
                         Some(msg.text_reply(POSHEL_NAHUY))
                     } else if data.contains(ESSENCE_IN) {
-                        Some(msg.text_reply(ESSENCE_OUT))
+                        Some(reply_to_message(msg, ESSENCE_OUT))
+                    } else if data.contains("/0") {
+                        Some(reply_to_message(msg, ZERO_DIVISION_ERROR))
                     } else {
                         None
                     };
@@ -73,4 +76,12 @@ fn handle_updates(api: Api) -> Result<(), telegram_bot::Error> {
         }
     }
     Ok(())
+}
+
+fn reply_to_message(msg: Message, text: &str) -> SendMessage {
+    if let Some(reply_to) = msg.reply_to_message {
+        reply_to.text_reply(text)
+    } else {
+        msg.text_reply(text)
+    }
 }
