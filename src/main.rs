@@ -13,6 +13,7 @@ use telegram_bot::prelude::*;
 use telegram_bot::{Api, Message, MessageEntityKind, MessageKind, SendMessage, UpdateKind, UserId};
 use tokio_core::reactor::Core;
 
+const HELLO: &str = "https://coub.com/view/19ffik";
 const BAD_WORDS_RE: &str = "[сsc][уuy][тt][ьиі1]?|[pпp][оаao][нn][иiыy1][мm][аa]|[pрr][оo][zsз][yuу][mм]|[uуаy][nн][дd][eе][рr]?[scс][tт][aэе][nн][dдт]?|[eэе][scс][scс]?[eэе][nн][csс][eэе]?|[сsc][оо][сsc][иi1]|[сsc][oо][сsc][аa]";
 const ZERO_DIVISION_ERROR: &str = "thread 'main' panicked at 'attempt to divide by zero'";
 const POSHEL_NAHUY: &str = "POSHEL NAHUY";
@@ -54,10 +55,12 @@ fn handle_updates(api: Api) -> Result<(), telegram_bot::Error> {
     for update in api.stream() {
         if let UpdateKind::Message(message) = update.kind {
             let msg = message.clone();
-            if let MessageKind::Text { data, entities } = message.kind {
-                let data = data.to_lowercase();
-                let reply =
-                    if users_to_fuck.contains(&message.from.id) && bad_words_re.is_match(&data) {
+            match message.kind {
+                MessageKind::Text { data, entities } => {
+                    let data = data.to_lowercase();
+                    let reply = if users_to_fuck.contains(&message.from.id)
+                        && bad_words_re.is_match(&data)
+                    {
                         Some(msg.text_reply(POSHEL_NAHUY))
                     } else if data.contains(ESSENCE_IN) {
                         Some(reply_to_message(msg, ESSENCE_OUT))
@@ -81,11 +84,18 @@ fn handle_updates(api: Api) -> Result<(), telegram_bot::Error> {
                     } else {
                         None
                     };
-                if let Some(reply) = reply {
-                    if let Err(err) = await!(api.send(reply)) {
-                        println!("Failed to send message: {}", err);
+                    if let Some(reply) = reply {
+                        if let Err(err) = await!(api.send(reply)) {
+                            println!("Failed to send message: {:?}", err);
+                        }
                     }
                 }
+                MessageKind::NewChatMembers { .. } => {
+                    if let Err(err) = await!(api.send(msg.text_reply(HELLO))) {
+                        println!("Failed to send message: {:?}", err);
+                    }
+                }
+                _ => {}
             }
         }
     }
