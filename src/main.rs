@@ -1,12 +1,14 @@
 #![feature(proc_macro, generators)]
 extern crate dotenv;
 extern crate futures_await as futures;
+extern crate futures_retry;
 extern crate regex;
 extern crate telegram_bot;
 extern crate tokio_core;
 
 use dotenv::dotenv;
 use futures::prelude::*;
+use futures_retry::{RetryPolicy, StreamRetryExt};
 use regex::Regex;
 use std::env;
 use telegram_bot::prelude::*;
@@ -52,7 +54,7 @@ fn handle_updates(api: Api) -> Result<(), telegram_bot::Error> {
     let bad_words_re = Regex::new(BAD_WORDS_RE).unwrap();
 
     #[async]
-    for update in api.stream() {
+    for update in api.stream().retry(handle_update_error) {
         if let UpdateKind::Message(message) = update.kind {
             let msg = message.clone();
             match message.kind {
@@ -100,6 +102,11 @@ fn handle_updates(api: Api) -> Result<(), telegram_bot::Error> {
         }
     }
     Ok(())
+}
+
+fn handle_update_error(err: telegram_bot::Error) -> RetryPolicy<telegram_bot::Error> {
+    println!("An error has occurred while getting update: {:?}", err);
+    RetryPolicy::Repeat
 }
 
 fn reply_to_message(msg: Message, text: &str) -> SendMessage {
