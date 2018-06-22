@@ -3,8 +3,8 @@ use futures_retry::{RetryPolicy, StreamRetryExt};
 use regex::Regex;
 use std::{error::Error, fmt, io::Error as IoError};
 use telegram_bot::{
-    prelude::*, Api, Error as TelegramError, Message, MessageEntityKind, MessageKind, SendMessage,
-    UpdateKind, UserId,
+    prelude::*, Api, Error as TelegramError, Message, MessageEntityKind, MessageKind,
+    MessageOrChannelPost, SendMessage, UpdateKind, UserId,
 };
 use tokio_core::reactor::Core;
 
@@ -113,6 +113,18 @@ fn handle_updates(api: Api) -> Result<(), TelegramError> {
                         .is_some()
                     {
                         Some(reply_to_message(msg, ZERO_DIVISION_ERROR))
+                    } else if data == "/userid" {
+                        if let Some(ref reply_to) = msg.reply_to_message {
+                            if let box MessageOrChannelPost::Message(Message { from, .. }) =
+                                reply_to
+                            {
+                                Some(msg.text_reply(format!("ID: {}", from.id)))
+                            } else {
+                                None
+                            }
+                        } else {
+                            None
+                        }
                     } else {
                         None
                     };

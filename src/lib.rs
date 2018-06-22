@@ -1,4 +1,4 @@
-#![feature(proc_macro, generators)]
+#![feature(box_patterns, generators, proc_macro)]
 extern crate futures_await as futures;
 extern crate futures_retry;
 extern crate regex;
