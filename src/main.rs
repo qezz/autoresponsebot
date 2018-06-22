@@ -19,24 +19,10 @@ const HELLO: &str = "https://coub.com/view/19ffik";
 const BAD_WORDS_RE: &str = "[сsc][уuy][тt][ьиі1]?|[pпp][оаao][нn][иiыy1][мm][аa]|[pрr][оo][zsз][yuу][mм]|[uуаy][nн][дd][eе][рr]?[scс][tт][aэе][nн][dдт]?|[eэе][scс][scс]?[eэе][nн][csс][eэе]?|[сsc][оо][сsc][иi1]|[сsc][oо][сsc][аa]";
 const ZERO_DIVISION_ERROR: &str = "thread 'main' panicked at 'attempt to divide by zero'";
 const POSHEL_NAHUY: &str = "POSHEL NAHUY";
-const ESSENCE_IN: &str = "не понимаешь сути";
-const ESSENCE_OUT: &str = "
-Ты СОВЕРШЕННО не понимаешь в чем суть расточата.
-расточат это не стековерфлоу «у меня не запускается хелловорлд, напишите мне 2 листа причин».
-расточат это не псевдоинтеллектуальные обсуждения на гитхабе.
-расточат это не гиттер, IRC или сраный продот.
-расточат это место, где люди могут побыть чудовищами — ужасными, бесчувственными,
-безразличными чудовищами, которыми они на самом деле и являются.
-В го нет дженериков, а мы смеемся.
-Код питонистов падает в проде из-за косяков с типизацией, а мы смеемся.
-Гоферы две недели не могут решить как писать простого бота в своем продоте, а мы смеемся и просим еще.
-Утинная типизация, фризы GC, касты к void* — мы смеемся.
-Тупые языки, национализм, дискриминация, ксенофобия, анальное рабство на интерпрайзных галерках,
-беспричинная ненависть — мы смеемся.
-Жаваскриптер  убил своего PMа чтобы не отлаживать легаси — мы смеемся.
-Мы бездушно подпишемся под чем угодно, наши предпочтения не основаны на здравом смысле,
-бесцельные споры — наша стихия, мы — истинное лицо IT-комьюнити.
-";
+const SENSE_IN: &str = "не понимаешь сути";
+const SENSE_OUT: &str = "http://telegra.ph/TY-NE-PONIMAESH-SUTI-06-22";
+const PERF_IN: &str = "перформанс|перфоманс|perfomance|performance|производительность";
+const PERF_OUT: &str = "http://telegra.ph/PERFORMANCE-06-22";
 
 fn main() {
     dotenv().ok();
@@ -52,6 +38,7 @@ fn handle_updates(api: Api) -> Result<(), telegram_bot::Error> {
     let test_user = UserId::new(560120889); // test test
     let users_to_fuck = vec![evengining_user, test_user];
     let bad_words_re = Regex::new(BAD_WORDS_RE).unwrap();
+    let perf_re = Regex::new(PERF_IN).unwrap();
 
     #[async]
     for update in api.stream().retry(handle_update_error) {
@@ -64,8 +51,10 @@ fn handle_updates(api: Api) -> Result<(), telegram_bot::Error> {
                         && bad_words_re.is_match(&data)
                     {
                         Some(msg.text_reply(POSHEL_NAHUY))
-                    } else if data.contains(ESSENCE_IN) {
-                        Some(reply_to_message(msg, ESSENCE_OUT))
+                    } else if data.contains(SENSE_IN) {
+                        Some(reply_to_message(msg, SENSE_OUT))
+                    } else if perf_re.is_match(&data) {
+                        Some(reply_to_message(msg, PERF_OUT))
                     } else if entities
                         .iter()
                         .find(|e| {
