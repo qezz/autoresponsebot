@@ -1,0 +1,37 @@
+{
+    "301800131": [
+        {
+            "matches": "[сsc][уuy][тt][ьиі1]?|[eэе][scс][scс]?[eэе][nн][csс][eэе]?",
+            "out": ["POSHEL NAHUY", "ты не понимаешь сути"]
+        },
+        {
+            "matches": "[pпp][оаao][нn][иiыy1][мm][аa]|[pрr][оo][zsз][yuу][mм]|[uуаy][nн][дd][eе][рr]?[scс][tт][aэе][nн][dдт]?",
+            "out": ["POSHEL NAHUY", "нет, не понимаешь", "но ведь ты не понимаешь", "нахуй иди", "нннахууй!!!"]
+        },
+        {
+            "matches": "[сsc][оо][сsc][иi1]|[сsc][oо][сsc][аa]",
+            "out": ["уединимся?)", "POSHEL NAHUY"]
+        }
+    ],
+    "all": [
+        {
+            "contains": "не понимаешь сути",
+            "out": ["http://telegra.ph/TY-NE-PONIMAESH-SUTI-06-22"]
+        },
+        {
+            "equals": "суть",
+            "out": ["http://telegra.ph/TY-NE-PONIMAESH-SUTI-06-22"]
+        },
+        {
+            "matches": "перформанс|перфоманс|perfomance|performance|производительность",
+            "out": ["http://telegra.ph/PERFORMANCE-06-22"]
+        },
+        {
+            "equals": "/0",
+            "out": ["thread 'main' panicked at 'attempt to divide by zero'"]
+        }
+    ],
+    "new_chat_member": [
+        "https://coub.com/view/19ffik"
+    ]
+}

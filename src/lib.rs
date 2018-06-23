@@ -1,10 +1,14 @@
-#![feature(box_patterns, generators, proc_macro)]
-extern crate futures_await as futures;
-extern crate futures_retry;
+#![feature(box_patterns)]
+extern crate rand;
 extern crate regex;
-extern crate telegram_bot;
-extern crate tokio_core;
+extern crate serde;
+#[macro_use]
+extern crate serde_derive;
+extern crate serde_json;
+extern crate teleborg;
 
 mod app;
+mod rules;
 
-pub use self::app::{App, AppError, AppResult};
+pub use self::app::run;
+pub use self::rules::load_from_file as load_rules;
