@@ -1,5 +1,6 @@
 #![feature(box_patterns)]
 extern crate rand;
+extern crate ratelimit_meter;
 extern crate regex;
 extern crate serde;
 #[macro_use]
