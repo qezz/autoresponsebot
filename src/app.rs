@@ -3,7 +3,7 @@ use ratelimit_meter::{Decider, LeakyBucket};
 use rules::Rules;
 use std::time::Duration;
 use teleborg::objects::{Chat, Message, Update, User};
-use teleborg::{Bot, Command, Dispatcher, Updater};
+use teleborg::{Bot, Command, Dispatcher, ParseMode, Updater};
 
 pub fn run<S: Into<String>>(token: S, rules: Rules) {
     env_logger::init();
@@ -89,9 +89,15 @@ impl Command for MessageHandler {
             _ => None,
         };
         if let Some((chat_id, reply_to_id, text)) = reply {
-            if let Err(err) =
-                bot.send_message(chat_id, text, None, None, None, Some(reply_to_id), None)
-            {
+            if let Err(err) = bot.send_message(
+                chat_id,
+                text,
+                Some(&ParseMode::Markdown),
+                None,
+                None,
+                Some(reply_to_id),
+                None,
+            ) {
                 error!("Failed to send a message: {:?}", err);
             }
         }
