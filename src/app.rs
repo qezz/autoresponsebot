@@ -1,5 +1,5 @@
 use env_logger;
-use ratelimit_meter::{LeakyBucket, Decider};
+use ratelimit_meter::{Decider, LeakyBucket};
 use rules::Rules;
 use std::time::Duration;
 use teleborg::objects::{Chat, Message, Update, User};
@@ -8,10 +8,19 @@ use teleborg::{Bot, Command, Dispatcher, Updater};
 pub fn run<S: Into<String>>(token: S, rules: Rules) {
     env_logger::init();
     let mut dispatcher = Dispatcher::new();
-    let user_id_bucket = LeakyBucket::new(10, Duration::from_secs(60)).expect("Failed to create /userid bucket");
-    let message_bucket = LeakyBucket::new(5, Duration::from_secs(60)).expect("Failed to create message bucket");
-    dispatcher.add_command_handler("userid", BucketHandler::new(user_id_bucket, handle_user_id), false);
-    dispatcher.add_message_handler(BucketHandler::new(message_bucket, MessageHandler::new(rules)));
+    let user_id_bucket =
+        LeakyBucket::new(10, Duration::from_secs(60)).expect("Failed to create /userid bucket");
+    let message_bucket =
+        LeakyBucket::new(5, Duration::from_secs(60)).expect("Failed to create message bucket");
+    dispatcher.add_command_handler(
+        "userid",
+        BucketHandler::new(user_id_bucket, handle_user_id),
+        false,
+    );
+    dispatcher.add_message_handler(BucketHandler::new(
+        message_bucket,
+        MessageHandler::new(rules),
+    ));
     Updater::start(Some(token.into()), None, None, None, dispatcher);
 }
 
@@ -91,12 +100,15 @@ impl Command for MessageHandler {
 
 struct BucketHandler {
     bucket: LeakyBucket,
-    inner: Box<Command>
+    inner: Box<Command>,
 }
 
 impl BucketHandler {
     fn new(bucket: LeakyBucket, handler: impl Command) -> BucketHandler {
-        BucketHandler { bucket, inner: Box::new(handler) }
+        BucketHandler {
+            bucket,
+            inner: Box::new(handler),
+        }
     }
 }
 
