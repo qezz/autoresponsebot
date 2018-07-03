@@ -23,7 +23,7 @@
             "out": ["http://telegra.ph/TY-NE-PONIMAESH-SUTI-06-22"]
         },
         {
-            "matches": "^перформанс|перфоманс|perfomance|performance|производительность$",
+            "matches": "^перформанс$|^перфоманс$|^perfomance$|^performance$|^производительность$",
             "out": ["http://telegra.ph/PERFORMANCE-06-22"]
         },
         {
