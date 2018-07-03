@@ -1,3 +1,4 @@
+use env_logger;
 use ratelimit_meter::{LeakyBucket, Decider};
 use rules::Rules;
 use std::time::Duration;
@@ -5,6 +6,7 @@ use teleborg::objects::{Chat, Message, Update, User};
 use teleborg::{Bot, Command, Dispatcher, Updater};
 
 pub fn run<S: Into<String>>(token: S, rules: Rules) {
+    env_logger::init();
     let mut dispatcher = Dispatcher::new();
     let user_id_bucket = LeakyBucket::new(10, Duration::from_secs(60)).expect("Failed to create /userid bucket");
     let message_bucket = LeakyBucket::new(5, Duration::from_secs(60)).expect("Failed to create message bucket");
@@ -24,8 +26,7 @@ fn handle_user_id(bot: &Bot, update: Update, _: Option<Vec<&str>>) {
     }) = update.message
     {
         if let Err(err) = bot.reply_to_message(&update, &format!("ID: {}", id)) {
-            // TODO: use a logging crate
-            println!("FAILED TO SEND A MESSAGE: {:?}", err);
+            error!("Failed to send a message: {:?}", err);
         }
     }
 }
@@ -82,8 +83,7 @@ impl Command for MessageHandler {
             if let Err(err) =
                 bot.send_message(chat_id, text, None, None, None, Some(reply_to_id), None)
             {
-                // TODO: use a logging crate
-                println!("FAILED TO SEND A MESSAGE: {:?}", err);
+                error!("Failed to send a message: {:?}", err);
             }
         }
     }
@@ -105,8 +105,7 @@ impl Command for BucketHandler {
         if let Ok(()) = self.bucket.check() {
             self.inner.execute(bot, update, args)
         } else {
-            // TODO: log
-            println!("NO WAY");
+            debug!("Update skipped: {:?}", update);
         }
     }
 }
