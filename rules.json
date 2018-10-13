@@ -53,6 +53,10 @@
         {
             "equals": "/thread",
             "out": ["thread 'rustjerk' panicked at 'attempt to stop thread'"]
+        },
+        {
+            "matches": "хецнер|hetzner",
+            "out": ["o/", "\\o"]
         }
     ],
     "new_chat_member": [
