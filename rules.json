@@ -48,7 +48,7 @@
         },
         {
             "matches": "(?i)net t[iy]",
-            "out": ["*NET TY*", "*POSHEL NAHUY*", "*I TY TOZHE IDI NAHUY*", "*YEDINIMSYA?*"]
+            "out": ["*NET TY*", "*POSHEL NAHUY*", "*I TY TOZHE IDI NAHUY*"]
         },
         {
             "equals": "/thread",
